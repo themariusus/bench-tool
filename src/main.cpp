@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <ctime>
+#include <string.h>
 
-typedef unsigned long long uint64;
+typedef unsigned char u8;
+typedef unsigned long long u64;
+
 struct TimeInt{
 
 	double* _ret = 0;
@@ -33,10 +36,10 @@ struct TimeInt{
 	}
 };
 
-uint64 cpu()
+u64 cpu()
 {
 	//count checks
-	uint64 checks = 0;
+	u64 checks = 0;
 	
 	//numbers to check
 	for(int i = 5; i < 300000; i++)
@@ -66,9 +69,37 @@ uint64 cpu()
 	return checks;
 }
 
-double timeJob(uint64 (*fptr)())
+u8* memPtr = NULL;
+u64 memSize = 0;
+u64 memAlloc()
 {
-	uint64 cnt;
+	if(!memPtr)
+	{
+		memPtr = new u8[memSize];
+	}
+	return memSize;
+}
+u64 memSet()
+{
+	if(memPtr)
+	{
+		memset(memPtr, 0, memSize);
+	}
+	return memSize;
+}
+u64 memDel()
+{
+	if(memPtr)
+	{
+		delete[] memPtr;
+		memPtr = NULL;
+	}
+	return memSize;
+}
+
+double timeJob(u64 (*fptr)())
+{
+	u64 cnt;
 	double tm;
 	{
 		TimeInt ti(&tm);
@@ -81,6 +112,12 @@ double timeJob(uint64 (*fptr)())
 
 int main()
 {
-	timeJob(cpu);
+	//timeJob(cpu);
+	memSize = (u64)1024*1024*2048;
+	timeJob(memAlloc);
+	//getchar();
+	timeJob(memSet);
+	getchar();
+	timeJob(memDel);
 	return 0;
 }
